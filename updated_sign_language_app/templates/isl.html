@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}ISL Mode - Sign Language Detection{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-primary text-white text-center py-3">
+        <h1 class="h3 mb-0">Indian Sign Language (ISL) Mode</h1>
+        <p class="mb-0">Detect ISL alphabets and numbers in real-time</p>
+      </div>
+      <div class="card-body">
+        <!-- Mode Selection -->
+        <div class="mb-4">
+          <label for="modeSelect" class="form-label">Select Mode:</label>
+          <select id="modeSelect" class="form-select">
+            <option value="normal">Normal Mode</option>
+            <option value="continuous">Continuous Mode</option>
+          </select>
+        </div>
+
+        <!-- Camera Status -->
+        <div class="alert alert-info d-flex align-items-center mb-4" id="cameraStatus">
+          <div class="d-flex align-items-center">
+            <div class="spinner-grow spinner-grow-sm text-primary me-3" role="status">
+              <span class="visually-hidden">Loading camera...</span>
+            </div>
+            <div>
+              <strong>Camera Status:</strong> <span id="cameraStatusText">Initializing camera... Please allow camera
+                access if prompted.</span>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-primary ms-auto" id="startCameraBtn">
+            <i class="fas fa-video me-1"></i> Open Camera
+          </button>
+        </div>
+
+        <!-- Video Container and Camera Info Panel -->
+        <div class="row mb-4">
+          <div class="col-lg-8">
+            <div id="videoContainer" class="video-container position-relative rounded overflow-hidden shadow-lg"
+              style="display: none;">
+              <div class="position-absolute top-0 start-0 m-2 p-2 bg-primary bg-opacity-75 rounded-pill text-white">
+                <span class="badge bg-danger me-1 blink">●</span> LIVE FEED
+              </div>
+              <div class="position-absolute top-0 end-0 m-2">
+                <button class="btn btn-sm btn-dark bg-opacity-75" id="fullscreenBtn">
+                  <i class="fas fa-expand"></i>
+                </button>
+              </div>
+              <img src="{{ url_for('video_feed_isl') }}" class="img-fluid" alt="ISL Video Feed" id="videoFeed">
+            </div>
+
+            <!-- Live Caption -->
+            <div id="liveCaption" class="live-caption mt-2 p-2 bg-dark text-white text-center rounded-bottom"
+              style="display: none;">
+              <span id="liveCaptionText">Analyzing sign language gestures...</span>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="camera-info-panel h-100 p-3 rounded bg-light shadow-sm">
+              <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>Camera Guide</h5>
+              <ul class="camera-tips list-unstyled">
+                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Position your hand in the center
+                </li>
+                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Use good lighting for better
+                  detection</li>
+                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Keep your hand steady for 2-3
+                  seconds</li>
+                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Make clear gestures with proper
+                  form</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Enhanced Text Display -->
+        <div class="card mb-4 border-0 shadow">
+          <div class="card-header bg-gradient bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <div><i class="fas fa-comment-dots me-2"></i>Detected Phrase</div>
+              <div class="badge bg-light text-dark px-3 py-2">
+                <i class="fas fa-edit"></i> <span id="textStatus">Ready</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body p-4">
+            <div class="p-3 bg-light rounded mb-4 position-relative" style="min-height: 100px;">
+              <div class="text-output-box" id="detected-text-container">
+                <p class="display-text mb-0 fs-3 fw-bold" id="detected-text-content"></p>
+              </div>
+              <input type="hidden" id="detected-text" value="">
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="row g-3">
+              <div class="col-md-6">
+                <button class="btn btn-danger w-100 d-flex align-items-center justify-content-center"
+                  onclick="clearText()">
+                  <i class="fas fa-trash-alt me-2"></i> Clear Text
+                </button>
+              </div>
+              <div class="col-md-6">
+                <button class="btn btn-success w-100 d-flex align-items-center justify-content-center"
+                  onclick="speakText()">
+                  <i class="fas fa-volume-up me-2"></i> Speak Text
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer text-center py-3">
+          <a href="{{ url_for('home') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Home
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let cameraActive = false;
+  let lastDetectedText = ""; // Store the last detected letter
+  let voices = [];
+  let continuousMode = false;
+  let detectedTextBuffer = ""; // Buffer for continuous mode
+
+  // Load available voices
+  function loadVoices() {
+    voices = speechSynthesis.getVoices();
+  }
+
+  // Camera control functions
+  document.getElementById("startCameraBtn").addEventListener("click", function () {
+    const cameraStatus = document.getElementById("cameraStatus");
+    const cameraStatusText = document.getElementById("cameraStatusText");
+    const videoContainer = document.getElementById("videoContainer");
+    const liveCaption = document.getElementById("liveCaption");
+
+    if (!cameraActive) {
+      this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Starting...';
+      cameraStatusText.textContent = "Connecting to camera...";
+
+      setTimeout(() => {
+        cameraActive = true;
+        cameraStatus.classList.remove("alert-info");
+        cameraStatus.classList.add("alert-success");
+        cameraStatusText.textContent = "Camera active and running";
+        this.innerHTML = '<i class="fas fa-video-slash me-1"></i> Close Camera';
+        videoContainer.style.display = "block";
+        liveCaption.style.display = "block";
+        if (continuousMode) {
+          startContinuousDetection();
+        }
+      }, 1500);
+    } else {
+      this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Stopping...';
+      cameraStatusText.textContent = "Disconnecting from camera...";
+
+      setTimeout(() => {
+        cameraActive = false;
+        cameraStatus.classList.remove("alert-success");
+        cameraStatus.classList.add("alert-info");
+        cameraStatusText.textContent = "Camera inactive. Click to activate.";
+        this.innerHTML = '<i class="fas fa-video me-1"></i> Open Camera';
+        videoContainer.style.display = "none";
+        liveCaption.style.display = "none";
+        stopContinuousDetection();
+      }, 1000);
+    }
+  });
+
+  // Fullscreen functionality
+  document.getElementById("fullscreenBtn").addEventListener("click", function () {
+    const videoFeed = document.getElementById("videoFeed");
+
+    if (!document.fullscreenElement) {
+      videoFeed.requestFullscreen();
+      this.innerHTML = '<i class="fas fa-compress"></i>';
+    } else {
+      document.exitFullscreen();
+      this.innerHTML = '<i class="fas fa-expand"></i>';
+    }
+  });
+
+  // Update text based on selected mode
+  document.getElementById("modeSelect").addEventListener("change", function () {
+    continuousMode = this.value === "continuous";
+    if (cameraActive) {
+      if (continuousMode) {
+        startContinuousDetection();
+      } else {
+        stopContinuousDetection();
+      }
+    }
+  });
+
+  function startContinuousDetection() {
+    detectedTextBuffer = ""; // Reset buffer for continuous mode
+    setInterval(updateText, 1000);
+  }
+
+  function stopContinuousDetection() {
+    clearInterval(updateText);
+  }
+
+  function updateText() {
+    fetch("/get_text")
+      .then(response => response.json())
+      .then(data => {
+        let detectedText = data.text; // Get the detected text
+        let textElement = document.getElementById("detected-text");
+        let textContentElement = document.getElementById("detected-text-content");
+        let textStatusElement = document.getElementById("textStatus");
+        let liveCaptionElement = document.getElementById("liveCaptionText");
+
+        if (continuousMode) {
+          // In Continuous mode, append detected letters
+          if (detectedText && detectedText !== lastDetectedText && detectedText.trim() !== "") {
+            detectedTextBuffer += detectedText; // Append detected text
+            lastDetectedText = detectedText; // Update last detected text
+            textElement.value = detectedTextBuffer; // Update hidden input
+            textContentElement.textContent = detectedTextBuffer; // Update displayed text
+            liveCaptionElement.textContent = "Detected: " + detectedTextBuffer;
+            textStatusElement.textContent = "Detected";
+          }
+        } else {
+          // In Normal mode, display the detected letter
+          if (detectedText && detectedText !== lastDetectedText && detectedText.trim() !== "") {
+            lastDetectedText = detectedText; // Update last detected text
+            textElement.value = detectedText; // Update hidden input
+            textContentElement.textContent = detectedText; // Update displayed text
+            liveCaptionElement.textContent = "Detected: " + detectedText;
+            textStatusElement.textContent = "Detected";
+            console.log("Detected Text:", detectedText);
+          }
+        }
+
+        if (!detectedText || detectedText.trim() === "") {
+          liveCaptionElement.textContent = "Analyzing sign language gestures...";
+          textStatusElement.textContent = "Ready";
+        }
+      })
+      .catch(err => console.error("Error fetching text:", err));
+  }
+
+  function clearText() {
+    fetch("/clear_text", { method: "POST" })
+      .then(() => {
+        document.getElementById("detected-text").value = "";
+        document.getElementById("detected-text-content").textContent = "";
+        document.getElementById("textStatus").textContent = "Ready";
+        detectedTextBuffer = ""; // Reset buffer on clear
+        lastDetectedText = ""; // Reset last detected text
+      })
+      .catch(err => console.error("Error clearing text:", err));
+  }
+
+  function speakText() {
+    let text = document.getElementById("detected-text").value;
+
+    if (text.trim() !== "") {
+      let utterance = new SpeechSynthesisUtterance(text);
+      utterance.volume = 1;
+      utterance.rate = 1;
+      utterance.pitch = 1;
+
+      let selectedVoice = voices.find(voice => voice.name === "Google Indian Male");
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+      }
+
+      window.speechSynthesis.speak(utterance);
+    }
+  }
+
+  // Load voices when the page loads
+  window.onload = function () {
+    loadVoices();
+  };
+
+  // Initialize voices when they're available
+  window.speechSynthesis.onvoiceschanged = function () {
+    loadVoices();
+  };
+</script>
+{% endblock %}

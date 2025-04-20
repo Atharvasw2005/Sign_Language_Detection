@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Language Detection - Home</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- AOS Animation Library -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body data-bs-spy="scroll" data-bs-target="#mainNavbar">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top" id="mainNavbar">
+    <div class="container">
+      <a class="navbar-brand" href="#hero">
+        <i class="fas fa-sign-language me-2"></i>Sign Language Detector
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="#hero">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#about">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#features">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#demo">Demo</a>
+          </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link" href="#team">Team</a>
+          </li> -->
+          <li class="nav-item">
+            <a class="nav-link" href="#tech-stack">Tech Stack</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="hero" class="hero-section">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6" data-aos="fade-right">
+          <h1 class="display-4 fw-bold mb-3">Breaking Barriers in Communication</h1>
+          <h2 class="h3 text-primary mb-4">Real-time Sign Language Detection</h2>
+          <p class="lead mb-5">Our advanced AI-powered application makes sign language accessible to everyone.
+            Experience seamless communication through our cutting-edge detection technology.</p>
+          <div class="d-flex flex-wrap gap-3 mb-5">
+            <a href="{{ url_for('isl') }}" class="btn btn-primary btn-lg">Try ISL Mode</a>
+            <a href="{{ url_for('custom') }}" class="btn btn-outline-primary btn-lg">Try Custom Mode</a>
+          </div>
+        </div>
+        <div class="col-lg-6 text-center" data-aos="fade-left">
+          <img src="{{ url_for('static', filename='assets/hero-illustration.svg') }}" alt="Sign Language Detection"
+            class="img-fluid"
+            onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg width=\'500\' height=\'400\' viewBox=\'0 0 800 600\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect x=\'100\' y=\'100\' width=\'600\' height=\'400\' rx=\'20\' fill=\'%23f0f2f5\' /%3E%3Ccircle cx=\'400\' cy=\'300\' r=\'150\' fill=\'%231a73e8\' opacity=\'0.2\' /%3E%3Cpath d=\'M400 200 Q450 150 500 200 Q550 250 500 300 Q450 350 400 300 Q350 250 400 200\' fill=\'%231a73e8\' opacity=\'0.6\' /%3E%3Cpath d=\'M300 200 Q350 150 400 200 Q450 250 400 300 Q350 350 300 300 Q250 250 300 200\' fill=\'%231a73e8\' opacity=\'0.4\' /%3E%3Cg transform=\'translate(320, 220)\'%3E%3Cpath d=\'M0,0 L30,0 L30,80 L0,80 Z\' fill=\'%23333\' /%3E%3Cpath d=\'M40,0 L70,0 L70,60 L40,60 Z\' fill=\'%23333\' /%3E%3Cpath d=\'M80,0 L110,0 L110,80 L80,80 Z\' fill=\'%23333\' /%3E%3Cpath d=\'M120,30 L150,30 L150,80 L120,80 Z\' fill=\'%23333\' /%3E%3Cpath d=\'M160,10 L190,10 L190,80 L160,80 Z\' fill=\'%23333\' /%3E%3C/g%3E%3C/svg%3E'">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="py-5 bg-light">
+    <div class="container">
+      <div class="section-header text-center" data-aos="fade-up">
+        <h2 class="h2 fw-bold">About Us</h2>
+        <p class="text-muted">Understanding Sign Language Detection</p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-lg-6" data-aos="fade-right">
+          <p class="lead">
+            Our Sign Language Detection application bridges communication gaps between the deaf community and those
+            unfamiliar with sign language. Using advanced AI and computer vision, we've created a tool that:
+          </p>
+          <ul class="list-unstyled">
+            <li class="mb-3"><i class="fas fa-check-circle text-primary me-2"></i> Recognizes Indian Sign Language (ISL)
+              alphabets and numbers</li>
+            <li class="mb-3"><i class="fas fa-check-circle text-primary me-2"></i> Detects common phrases and
+              expressions</li>
+            <li class="mb-3"><i class="fas fa-check-circle text-primary me-2"></i> Converts sign language to text in
+              real-time</li>
+            <li class="mb-3"><i class="fas fa-check-circle text-primary me-2"></i> Utilizes text-to-speech for audible
+              communication</li>
+          </ul>
+        </div>
+        <div class="col-lg-6" data-aos="fade-left">
+          <p>
+            With MediaPipe and TensorFlow at its core, our application uses sophisticated machine learning models
+            trained on thousands of sign language gestures. The technology tracks hand landmarks in 3D space and
+            analyzes movement patterns to accurately interpret signs.
+          </p>
+          <p>
+            We're committed to making communication more accessible and inclusive. Our application continues to learn
+            and improve, expanding its sign language vocabulary and detection accuracy with each update.
+          </p>
+          <a href="#features" class="btn btn-primary mt-3">Learn More</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-5">
+    <div class="container">
+      <div class="section-header text-center" data-aos="fade-up">
+        <h2 class="h2 fw-bold">Features</h2>
+        <p class="text-muted">What Our App Offers</p>
+      </div>
+
+      <div class="row g-4">
+        <!-- Feature 1 -->
+        <div class="col-md-6 col-lg-3" data-aos="zoom-in">
+          <div class="feature-card p-4 text-center">
+            <div class="feature-icon">
+              <i class="fas fa-language"></i>
+            </div>
+            <h4 class="h5 fw-bold">ISL Mode</h4>
+            <p class="mb-0">Detect Indian Sign Language alphabets and numbers with high accuracy. Perfect for learning
+              and practicing ISL.</p>
+          </div>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="col-md-6 col-lg-3" data-aos="zoom-in" data-aos-delay="100">
+          <div class="feature-card p-4 text-center">
+            <div class="feature-icon">
+              <i class="fas fa-hands"></i>
+            </div>
+            <h4 class="h5 fw-bold">Custom Phrase Detection</h4>
+            <p class="mb-0">Recognize common phrases like "Hello", "Thank you", and "I am happy" through sign gestures.
+            </p>
+          </div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="col-md-6 col-lg-3" data-aos="zoom-in" data-aos-delay="200">
+          <div class="feature-card p-4 text-center">
+            <div class="feature-icon">
+              <i class="fas fa-microphone"></i>
+            </div>
+            <h4 class="h5 fw-bold">Text-to-Speech</h4>
+            <p class="mb-0">Convert detected signs directly to audible speech with customizable voice, speed, and pitch
+              settings.</p>
+          </div>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="col-md-6 col-lg-3" data-aos="zoom-in" data-aos-delay="300">
+          <div class="feature-card p-4 text-center">
+            <div class="feature-icon">
+              <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h4 class="h5 fw-bold">Responsive Design</h4>
+            <p class="mb-0">Use the application on any device with our mobile-friendly interface and adaptive video
+              feed.</p>
+          </div>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="col-md-6 col-lg-3" data-aos="zoom-in" data-aos-delay="400">
+          <div class="feature-card p-4 text-center">
+            <div class="feature-icon">
+              <i class="fas fa-keyboard"></i>
+            </div>
+            <h4 class="h5 fw-bold">Continuous Mode</h4>
+            <p class="mb-0">Build sentences by stringing together multiple detected signs in a continuous flow.</p>
+          </div>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="col-md-6 col-lg-3" data-aos="zoom-in" data-aos-delay="500">
+          <div class="feature-card p-4 text-center">
+            <div class="feature-icon">
+              <i class="fas fa-video"></i>
+            </div>
+            <h4 class="h5 fw-bold">Real-time Detection</h4>
+            <p class="mb-0">Experience minimal latency with our optimized video processing and machine learning
+              algorithms.</p>
+          </div>
+        </div>
+
+        <!-- Feature 7 -->
+        <div class="col-md-6 col-lg-3" data-aos="zoom-in" data-aos-delay="600">
+          <div class="feature-card p-4 text-center">
+            <div class="feature-icon">
+              <i class="fas fa-brain"></i>
+            </div>
+            <h4 class="h5 fw-bold">AI-Powered</h4>
+            <p class="mb-0">Leveraging TensorFlow and MediaPipe for accurate hand tracking and sign recognition.</p>
+          </div>
+        </div>
+
+        <!-- Feature 8 -->
+        <div class="col-md-6 col-lg-3" data-aos="zoom-in" data-aos-delay="700">
+          <div class="feature-card p-4 text-center">
+            <div class="feature-icon">
+              <i class="fas fa-universal-access"></i>
+            </div>
+            <h4 class="h5 fw-bold">Accessibility</h4>
+            <p class="mb-0">Designed with accessibility in mind to serve both the deaf community and those learning sign
+              language.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Demo Section -->
+  <section id="demo" class="py-5 bg-light">
+    <div class="container">
+      <div class="section-header text-center" data-aos="fade-up">
+        <h2 class="h2 fw-bold">Demo</h2>
+        <p class="text-muted">Try Our Application</p>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-lg-8 text-center mb-5" data-aos="fade-up">
+          <p class="lead">Experience the power of our Sign Language Detection application by trying one of our two
+            specialized modes.</p>
+        </div>
+      </div>
+
+      <div class="row g-4 justify-content-center">
+        <!-- ISL Mode -->
+        <div class="col-md-6" data-aos="fade-up">
+          <div class="mode-card">
+            <div class="mode-icon">
+              <i class="fas fa-sign-language"></i>
+            </div>
+            <h3 class="h4 fw-bold mb-3">ISL Mode</h3>
+            <p class="mb-4">Detect letters, numbers, and symbols in Indian Sign Language. Perfect for learning and
+              communicating the basics.</p>
+            <a href="{{ url_for('isl') }}" class="btn btn-primary">Try ISL Mode</a>
+          </div>
+        </div>
+
+        <!-- Custom Mode -->
+        <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+          <div class="mode-card">
+            <div class="mode-icon">
+              <i class="fas fa-comment-dots"></i>
+            </div>
+            <h3 class="h4 fw-bold mb-3">Custom Mode</h3>
+            <p class="mb-4">Recognize common phrases and expressions through sign language gestures for more
+              conversational communication.</p>
+            <a href="{{ url_for('custom') }}" class="btn btn-primary">Try Custom Mode</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Section -->
+  <!-- <section id="team" class="py-5">
+  <div class="container">
+    <div class="section-header text-center" data-aos="fade-up">
+      <h2 class="h2 fw-bold">Our Team</h2>
+      <p class="text-muted">The People Behind Sign Language Detection</p>
+    </div>-->
+
+  <!-- <div class="row g-4 justify-content-center"> -->
+  <!-- Team Member 1 -->
+  <!-- <div class="col-md-6 col-lg-5" data-aos="fade-up">
+    <div class="team-card p-4 text-center">
+      <div class="team-img d-flex align-items-center justify-content-center mb-4">
+        <i class="fas fa-user-circle"></i>
+      </div>
+      <h4 class="h5 fw-bold">Samarth Joshi</h4>
+      <p class="text-muted mb-3">Fornt End </p>
+      <p class="mb-3">Specialized in computer vision and neural networks, Alex developed the core sign language
+        detection algorithms.</p>
+      <div class="team-social">
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        <a href="mailto:example@email.com"><i class="fas fa-envelope"></i></a>
+        <a href="#"><i class="fab fa-github"></i></a>
+      </div>
+    </div>
+  </div> -->
+
+  <!-- Team Member 2 -->
+  <!-- <div class="col-md-6 col-lg-5" data-aos="fade-up" data-aos-delay="100">
+    <div class="team-card p-4 text-center">
+      <div class="team-img d-flex align-items-center justify-content-center mb-4">
+        <i class="fas fa-user-circle"></i>
+      </div>
+      <h4 class="h5 fw-bold">Priya Sharma</h4>
+      <p class="text-muted mb-3">Frontend Developer</p>
+      <p class="mb-3">With expertise in creating intuitive user interfaces, Priya designed the application's responsive
+        and accessible frontend.</p>
+      <div class="team-social">
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        <a href="mailto:example@email.com"><i class="fas fa-envelope"></i></a>
+        <a href="#"><i class="fab fa-github"></i></a>
+      </div>
+    </div>
+  </div>
+
+  </div>
+  </div>
+  </section> -->
+
+
+
+  <!-- Tech Stack Section -->
+  <section id="tech-stack" class="py-5 bg-light">
+    <div class="container">
+      <div class="section-header text-center" data-aos="fade-up">
+        <h2 class="h2 fw-bold">Tech Stack Used</h2>
+        <p class="text-muted">Technologies Behind Sign Language Detection</p>
+      </div>
+
+      <div class="row g-4 justify-content-center">
+        <!-- Backend Technologies -->
+        <div class="col-lg-6" data-aos="fade-up">
+          <div class="card shadow-sm p-4 h-100">
+            <h3 class="h4 fw-bold mb-4">Backend</h3>
+
+            <ul class="list-unstyled">
+              <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Flask (Backend Framework)</li>
+              <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> TensorFlow (LSTM Model Training)
+              </li>
+              <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Mediapipe (Hand and Gesture
+                Detection)</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Frontend Technologies -->
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+          <div class="card shadow-sm p-4 h-100">
+            <h3 class="h4 fw-bold mb-4">Frontend</h3>
+
+            <ul class="list-unstyled">
+              <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> HTML, CSS, JavaScript</li>
+              <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Bootstrap (Responsive Design)</li>
+              <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> React.js (Interactive UI)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Footer -->
+  <footer class="footer text-center py-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <p class="mb-0">&copy; 2025 Sign Language Detector. All Rights Reserved. Made with <i
+              class="fas fa-heart"></i> by our team.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top Button -->
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center">
+    <i class="fas fa-arrow-up"></i>
+  </a>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- AOS Animation Library -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- Custom JS -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>

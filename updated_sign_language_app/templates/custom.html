@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Mode - Sign Language Detection</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('home') }}">
+                <i class="fas fa-sign-language me-2"></i>Sign Language Detector
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('isl') }}">ISL Mode</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Custom Mode</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5 pt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white text-center py-3">
+                        <h1 class="h3 mb-0">Custom Sign Language Mode</h1>
+                        <p class="mb-0">Detect common phrases and greetings in sign language</p>
+                    </div>
+                    <div class="card-body">
+                        <!-- Camera Status -->
+                        <div class="alert alert-info d-flex align-items-center mb-4" id="cameraStatus">
+                            <div class="d-flex align-items-center">
+                                <div class="spinner-grow spinner-grow-sm text-primary me-3" role="status">
+                                    <span class="visually-hidden">Loading camera...</span>
+                                </div>
+                                <div>
+                                    <strong>Camera Status:</strong> <span id="cameraStatusText">Initializing camera... Please allow camera access if prompted.</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-sm btn-primary ms-auto" id="startCameraBtn">
+                                <i class="fas fa-video me-1"></i> Open Camera
+                            </button>
+                        </div>
+
+                        <!-- Video Container and Camera Info Panel -->
+                        <div class="row mb-4">
+                            <div class="col-lg-8">
+                                <div id="videoContainer" class="video-container position-relative rounded overflow-hidden shadow-lg" style="display: none;">
+                                    <div class="position-absolute top-0 start-0 m-2 p-2 bg-primary bg-opacity-75 rounded-pill text-white">
+                                        <span class="badge bg-danger me-1 blink">●</span> LIVE FEED
+                                    </div>
+                                    <div class="position-absolute top-0 end-0 m-2">
+                                        <button class="btn btn-sm btn-dark bg-opacity-75" id="fullscreenBtn">
+                                            <i class="fas fa-expand"></i>
+                                        </button>
+                                    </div>
+                                    <img src="{{ url_for('video_feed_custom') }}" class="img-fluid" alt="Custom Video Feed" id="videoFeed">
+                                </div>
+
+                                <!-- Live Caption -->
+                                <div id="liveCaption" class="live-caption mt-2 p-2 bg-dark text-white text-center rounded-bottom" style="display: none;">
+                                    <span id="liveCaptionText">Analyzing sign language gestures...</span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="camera-info-panel h-100 p-3 rounded bg-light shadow-sm">
+                                    <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>Camera Guide</h5>
+                                    <ul class="camera-tips list-unstyled">
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Position your hand in the center</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Use good lighting for better detection</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Keep your hand steady for 2-3 seconds</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Make clear gestures with proper form</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Enhanced Text Display -->
+                        <div class="card mb-4 border-0 shadow">
+                            <div class="card-header bg-gradient bg-primary text-white">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div><i class="fas fa-comment-dots me-2"></i>Detected Phrase</div>
+                                    <div class="badge bg-light text-dark px-3 py-2">
+                                        <i class="fas fa-edit"></i> <span id="textStatus">Ready</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="p-3 bg-light rounded mb-4 position-relative" style="min-height: 100px;">
+                                    <div class="text-output-box" id="detected-text-container">
+                                        <p class="display-text mb-0 fs-3 fw-bold" id="detected-text-content"></p>
+                                    </div>
+                                    <input type="hidden" id="detected-text" value="">
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <button class="btn btn-danger w-100 d-flex align-items-center justify-content-center" onclick="clearText()">
+                                            <i class="fas fa-trash-alt me-2"></i> Clear Text
+                                        </button>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button class="btn btn-success w-100 d-flex align-items-center justify-content-center" onclick="speakText()">
+                                            <i class="fas fa-volume-up me-2"></i> Speak Text
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Phrase Reference -->
+                        <!-- <div class="card">
+                            <div class="card-header bg-light">
+                                <i class="fas fa-info-circle me-2"></i>Available Phrases
+                            </div>
+                            <div class="card-body p-4">
+                                <p class="text-center mb-3">Custom Mode can detect the following phrases:</p>
+                                <div class="row g-3 text-center">
+                                    <div class="col-md-4">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <img src="path/to/hello-how-are-you.jpg" alt="Hello how are you" class="mb-2" style="width: 60px;">
+                                                <h5>Hello how are you</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <img src="path/to/i-am-fine.jpg" alt="I am fine" class="mb-2" style="width: 60px;">
+                                                <h5>I am fine</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <img src="path/to/i-am-happy.jpg" alt="I am happy" class="mb-2" style="width: 60px;">
+                                                <h5>I am happy</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <img src="path/to/thank-you.jpg" alt="Thank you" class="mb-2" style="width: 60px;">
+                                                <h5>Thank you</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <img src="path/to/what-is-your-name.jpg" alt="What is your name" class="mb-2" style="width: 60px;">
+                                                <h5>What is your Name</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <img src="path/to/good-bye.jpg" alt="Good Bye" class="mb-2" style="width: 60px;">
+                                                <h5>Good Bye</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+                        
+                    </div>
+                    <div class="card-footer text-center py-3">
+                        <a href="{{ url_for('home') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer text-center py-4 mt-5">
+        <div class="container">
+            <p class="mb-0">&copy; 2025 Sign Language Detector. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom Script -->
+    <script>
+        let cameraActive = false;
+        let lastDetectedText = "None";
+        let voices = [];
+
+        // Load available voices
+        function loadVoices() {
+            voices = speechSynthesis.getVoices();
+        }
+
+        // Camera control functions
+        document.getElementById("startCameraBtn").addEventListener("click", function () {
+            const cameraStatus = document.getElementById("cameraStatus");
+            const cameraStatusText = document.getElementById("cameraStatusText");
+            const videoContainer = document.getElementById("videoContainer");
+            const liveCaption = document.getElementById("liveCaption");
+
+            if (!cameraActive) {
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Starting...';
+                cameraStatusText.textContent = "Connecting to camera...";
+
+                setTimeout(() => {
+                    cameraActive = true;
+                    cameraStatus.classList.remove("alert-info");
+                    cameraStatus.classList.add("alert-success");
+                    cameraStatusText.textContent = "Camera active and running";
+                    this.innerHTML = '<i class="fas fa-video-slash me-1"></i> Close Camera';
+                    videoContainer.style.display = "block";
+                    liveCaption.style.display = "block";
+                }, 1500);
+            } else {
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Stopping...';
+                cameraStatusText.textContent = "Disconnecting from camera...";
+
+                setTimeout(() => {
+                    cameraActive = false;
+                    cameraStatus.classList.remove("alert-success");
+                    cameraStatus.classList.add("alert-info");
+                    cameraStatusText.textContent = "Camera inactive. Click to activate.";
+                    this.innerHTML = '<i class="fas fa-video me-1"></i> Open Camera';
+                    videoContainer.style.display = "none";
+                    liveCaption.style.display = "none";
+                }, 1000);
+            }
+        });
+
+        // Fullscreen functionality
+        document.getElementById("fullscreenBtn").addEventListener("click", function () {
+            const videoFeed = document.getElementById("videoFeed");
+
+            if (!document.fullscreenElement) {
+                videoFeed.requestFullscreen();
+                this.innerHTML = '<i class="fas fa-compress"></i>';
+            } else {
+                document.exitFullscreen();
+                this.innerHTML = '<i class="fas fa-expand"></i>';
+            }
+        });
+
+        function updateText() {
+            fetch("/get_text")
+                .then(response => response.json())
+                .then(data => {
+                    let detectedText = data.text;
+                    let textElement = document.getElementById("detected-text");
+                    let textContentElement = document.getElementById("detected-text-content");
+                    let textStatusElement = document.getElementById("textStatus");
+                    let liveCaptionElement = document.getElementById("liveCaptionText");
+
+                    textElement.value = detectedText;
+                    textContentElement.textContent = detectedText;
+
+                    if (detectedText && detectedText !== lastDetectedText && detectedText.trim() !== "") {
+                        lastDetectedText = detectedText;
+                        liveCaptionElement.textContent = "Detected: " + detectedText;
+                        textStatusElement.textContent = "Detected";
+                    } else if (!detectedText || detectedText.trim() === "") {
+                        liveCaptionElement.textContent = "Analyzing sign language gestures...";
+                        textStatusElement.textContent = "Ready";
+                    }
+                })
+                .catch(err => console.error("Error fetching text:", err));
+        }
+
+        // Call updateText every second
+        setInterval(updateText, 1000);
+
+        function clearText() {
+            fetch("/clear_text", { method: "POST" })
+                .then(() => {
+                    document.getElementById("detected-text").value = "";
+                    document.getElementById("detected-text-content").textContent = "";
+                    document.getElementById("textStatus").textContent = "Ready";
+                })
+                .catch(err => console.error("Error clearing text:", err));
+        }
+
+        function speakText() {
+            let text = document.getElementById("detected-text").value;
+
+            if (text.trim() !== "") {
+                let utterance = new SpeechSynthesisUtterance(text);
+                utterance.volume = 1;
+                utterance.rate = 1;
+                utterance.pitch = 1;
+
+                let selectedVoice = voices.find(voice => voice.name === "Google Indian Male");
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                }
+
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Load voices when the page loads
+        window.onload = function () {
+            loadVoices();
+        };
+
+        // Initialize voices when they're available
+        window.speechSynthesis.onvoiceschanged = function () {
+            loadVoices();
+        };
+    </script>
+</body>
+
+</html>
