@@ -62,3 +62,18 @@ UPDATED_SIGN_LANGUAGE_APP/
 │
 └── requirements.txt                 # List of dependencies for the project
 
+
+Output:
+
+Home Page:
+![image](https://github.com/user-attachments/assets/4009b584-8083-4cbd-be8f-28e3675954a2)
+
+Indian Sign Language
+![image](https://github.com/user-attachments/assets/3c7005cc-4279-44fc-8491-223965d3c16b)
+
+Custome Sign LAnguage
+![image](https://github.com/user-attachments/assets/a280e704-d577-4120-a246-e81f6e654aae)
+
+
+
+
